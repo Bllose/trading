@@ -47,7 +47,22 @@ class GetData():
         test_y = label[train_num:]
         return train_x, test_x, train_y, test_y
     
+    def getNewestData(self, n:int,  num: int):
+        """
+        获取最新的数据
+        @param num: 最新数据的行数
+        @param n: 步长
+        """
+        if self.data is None:
+            self.getData()
+        return [self.data.iloc[i: i + n].values.tolist()
+                   for i in range(len(self.data) - num - n, len(self.data))
+                   if i + n < len(self.data)]
+    
 if __name__ == '__main__':
     GD = GetData(r'LSTM\resources\ochlv.csv')
-    train_x, test_x, train_y, test_y = GD.process_data(5, 0.7)
-    print(len(train_x), len(test_x), len(train_y), len(test_y))
+    # train_x, test_x, train_y, test_y = GD.process_data(5, 0.7)
+    # print(len(train_x), len(test_x), len(train_y), len(test_y))
+    features = GD.getNewestData(5, 20)
+    print(len(features))
+    print(features)
