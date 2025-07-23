@@ -1,4 +1,5 @@
 import torch                         # 导入PyTorch库
+from torch import Tensor
 import torch.nn as nn                # 导入神经网络模块
 import torch.optim as optim          # 导入优化器模块
 from tqdm import tqdm                # 导入tqdm库，用于显示进度条
@@ -151,11 +152,38 @@ def test_model(test_dataLoader_, loss_func):
 
     return pred, label, test_loss
 
-def predict_model(five_dates_data):
+def test_model_trainning(test_dataLoader_):
+    # 预测值列表
+    pred = []
+    # 真实值列表
+    label = []
     model_ = Model(5)
     # 加载模型的状态字典
     model_.load_state_dict(torch.load("./lstm_.pth"))
     # 将模型设置为评估模式
     model_.eval()
-    p = model_(five_dates_data)
+
+    # 测试样本总数
+    total_test_num = 0
+    for x, y in test_dataLoader_:
+        x_num = len(x)
+        p = model_(x)
+        total_test_num += x_num
+        # 将预测值添加到列表中
+        pred.extend(p.data.squeeze(1).tolist())
+        # 将真实标签添加到列表中
+        label.extend(y.tolist())
+    return pred, label
+
+def predict_model(newest_data: Tensor, n):
+    """
+    @param newest_data: shape([20, 5, 5]) 
+    20 = batch_size + 
+    """
+    model_ = Model(n)
+    # 加载模型的状态字典
+    model_.load_state_dict(torch.load("./lstm_.pth"))
+    # 将模型设置为评估模式
+    model_.eval()
+    p = model_(newest_data)
     return p
