@@ -70,33 +70,25 @@ def train_task():
 def test_predict_task():
     #超参数
     days_num = 5
-    # epoch = 20
-    # fea = 5
     batch_size = 20
-    # early_stop = 5
- 
-    # #初始化模型
-    # model = Model(fea)
- 
+
     #数据处理
     GD = GetData(save_path=r'LSTM\resources\ochlv.csv')
-    x_train, x_test, y_train, y_test = GD.process_data(days_num, 0.7)
-    # x_train = torch.tensor(x_train).float()
+    _, x_test, _, y_test = GD.process_data(days_num, 0.7)
     x_test = torch.tensor(x_test).float()
-    # y_train = torch.tensor(y_train).float()
     y_test = torch.tensor(y_test).float()
     test_data = TensorDataset(x_test, y_test)
     test_dataLoader = DataLoader(test_data, batch_size=batch_size)
  
-    p, y = test_model_trainning(test_dataLoader)
+    p, y, trend_right_counter, trend_wrong_counter = test_model_trainning(test_dataLoader)
  
     #绘制折线图
     pred = [ele * (GD.close_max - GD.close_min) + GD.close_min for ele in p]
     data = [ele * (GD.close_max - GD.close_min) + GD.close_min for ele in y]
     plot_img(data, pred)
+    print(f'预测趋势: 成功{trend_right_counter}次， 失败 {trend_wrong_counter}次')
 
-    #输出模型损失
-    print('模型损失：')
+    print('DONE')
 
 def predict_task():
     #超参数
