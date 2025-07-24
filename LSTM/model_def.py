@@ -163,6 +163,8 @@ def test_model_trainning(test_dataLoader_):
     # 将模型设置为评估模式
     model_.eval()
 
+    trend_right_counter = 0
+    trend_wrong_counter = 0
     # 测试样本总数
     total_test_num = 0
     for x, y in test_dataLoader_:
@@ -173,7 +175,11 @@ def test_model_trainning(test_dataLoader_):
         pred.extend(p.data.squeeze(1).tolist())
         # 将真实标签添加到列表中
         label.extend(y.tolist())
-    return pred, label
+        if (y[-1] > y[-2]).item() == (p[-1] > p[-2]).item():
+            trend_right_counter += 1
+        else:
+            trend_wrong_counter += 1
+    return pred, label, trend_right_counter, trend_wrong_counter
 
 def predict_model(newest_data: Tensor, n):
     """
